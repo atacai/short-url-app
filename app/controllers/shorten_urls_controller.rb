@@ -1,4 +1,8 @@
 class ShortenUrlsController < ApplicationController
+	def index
+		# nothing to do on index
+	end
+
 	def add
 		errors = Array.new
 

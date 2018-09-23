@@ -1,0 +1,97 @@
+<html>
+	<body class="body-block grade_grey">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-5 col-lg-4 title-section">
+					<h2 class="text-center">URL Shortening</h2>
+					<div class="form-group">
+						<label for="original_url">Your URL</label>
+						<input type="text" id="original_url" name="original_url" class="form-control" placeholder="Example: www.google.com"/>
+					</div>
+					<div class="form-group">
+						<label for="short_url">Short URL</label>
+						<img class="loader" src="/assets/loader"/>
+						<input type="text" id="short_url" name="short_url" class="form-control" readonly="true"/>
+					</div>
+					<div class="form-group">
+						<button type="button" id="generate_url" class="btn btn-generate float-right">Generate</button>
+						<button type="button" id="redirect_url" class="btn btn-generate float-right">Go</button>
+					</div>
+				</div>
+				<div class="col-xs-7 col-lg-8 banner-section">
+					<div id="carousel-scenery" class="carousel slide" data-ride="carousel">
+						<ol class="carousel-indicators">
+							<li data-target="#carousel-scenery" data-slide-to="0" class="active"></li>
+							<li data-target="#carousel-scenery" data-slide-to="1"></li>
+							<li data-target="#carousel-scenery" data-slide-to="2"></li>
+							<li data-target="#carousel-scenery" data-slide-to="3"></li>
+							<li data-target="#carousel-scenery" data-slide-to="4"></li>
+						</ol>
+						<div class="carousel-inner" role="listbox">
+							<div class="carousel-item active">
+								<img class="d-block img-fluid" src="/assets/mountain-dark" alt="First slide">
+							</div>
+							<div class="carousel-item">
+								<img class="d-block img-fluid" src="/assets/forest-snow" alt="Second slide">
+							</div>
+							<div class="carousel-item">
+								<img class="d-block img-fluid" src="/assets/beach-stone" alt="Third slide">
+							</div>
+							<div class="carousel-item">
+								<img class="d-block img-fluid" src="/assets/sabana-river" alt="Fourth slide">
+							</div>
+							<div class="carousel-item">
+								<img class="d-block img-fluid" src="/assets/waterfall" alt="Fifth slide">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+
+<script>
+	$(document).ready (function () {
+		$("button#generate_url").show();
+		$("button#redirect_url").hide();
+	});
+
+	$("input#short_url").change (function () {
+		if ($(this).val() != "") {
+			$("button#generate_url").hide();
+			$("button#redirect_url").show();
+		}
+	});
+
+	$("button#generate_url").click (function () {
+		$("img.loader").show();
+		$(".alert").remove();
+
+		$.ajax({
+		  type: "post",
+		  url: "/add",
+		  data: "original_url=" + $("input#original_url").val(),
+		  success: function (data, textStatus, jqXHR) {
+		  	$("input#short_url").val(data.link.short_url).change();
+
+		  	// add error message
+		  	data.errors.forEach (function (dict){
+		  		if ("error" in dict && $("input#original_url").next(".alert-danger").length == 0) {
+		  			$("input#original_url").after('<div class="alert alert-danger">' + dict["error"] + '</div>');
+		  		} else if ("warning" in dict && $("input#short_url").next(".alert-warning").length == 0) {
+		  			$("input#short_url").after('<div class="alert alert-warning">' + dict["warning"] + '</div>');
+		  		}
+		  	});
+
+				$("img.loader").hide();
+		  },
+		});
+	});
+
+	$("button#redirect_url").click (function () {
+		if (confirm("Are you sure want to leave this page ?")) {
+			window.location.href = "http://" + $("input#short_url").val();
+		}
+	});
+</script>
