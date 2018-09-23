@@ -35,4 +35,14 @@ class ShortenUrlsController < ApplicationController
 		}
 		render json: result.to_json
 	end
+
+	def show
+		url = ShortenUrl.find_by_short_url(params[:short_url])
+		if !url.nil?
+			redirect_to url.simplified_url
+		else
+			redirect_to root_path
+		end
+	end
+
 end
