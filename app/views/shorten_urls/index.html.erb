@@ -75,14 +75,20 @@
 		  success: function (data, textStatus, jqXHR) {
 		  	$("input#short_url").val(data.link.short_url).change();
 
-		  	// add error message
-		  	data.errors.forEach (function (dict){
-		  		if ("error" in dict && $("input#original_url").next(".alert-danger").length == 0) {
-		  			$("input#original_url").after('<div class="alert alert-danger">' + dict["error"] + '</div>');
-		  		} else if ("warning" in dict && $("input#short_url").next(".alert-warning").length == 0) {
-		  			$("input#short_url").after('<div class="alert alert-warning">' + dict["warning"] + '</div>');
-		  		}
-		  	});
+				// add error message
+				for (const [key, value] of Object.entries(data.errors)) {
+					value.forEach (function (msg) {
+						if (msg.substr(0,1) == "E") {
+							css_class = "alert-danger";
+							error_msg = msg.replace('E:', '');
+						} else if (msg.substr(0,1) == "W") {
+							css_class = "alert-warning";
+							error_msg = msg.replace('W:', '');
+						}
+
+						$("input#" + key).after("<div class='alert " + css_class + "'>" + error_msg + "</div>")
+					});
+				}
 
 				$("img.loader").hide();
 		  },
