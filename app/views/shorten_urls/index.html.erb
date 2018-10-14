@@ -55,6 +55,12 @@
 	$(document).ready (function () {
 		$("button#generate_url").show();
 		$("button#redirect_url").hide();
+
+		$("#original_url").keyup(function(event) {
+	    if (event.keyCode === 13) {
+	        $("button#generate_url").click();
+	    }
+	  });
 	});
 
 	$("input#short_url").change (function () {
@@ -76,17 +82,17 @@
 		  	$("input#short_url").val(data.link.short_url).change();
 
 				// add error message
-				for (const [key, value] of Object.entries(data.errors)) {
-					value.forEach (function (msg) {
-						if (msg.substr(0,1) == "E") {
-							css_class = "alert-danger";
-							error_msg = msg.replace('E:', '');
-						} else if (msg.substr(0,1) == "W") {
-							css_class = "alert-warning";
-							error_msg = msg.replace('W:', '');
-						}
+				for (const [id, messages] of Object.entries(data.errors)) {
+					messages.forEach (function (message) {
+						for (const[type, msg] of Object.entries(message)) {
+							if (type == "error") {
+								css_class = "alert-danger";
+							} else if (type == "warning") {
+								css_class = "alert-warning";
+							}
 
-						$("input#" + key).after("<div class='alert " + css_class + "'>" + error_msg + "</div>")
+							$("input#" + id).after("<div class='alert " + css_class + "'>" + msg + "</div>")
+						}
 					});
 				}
 

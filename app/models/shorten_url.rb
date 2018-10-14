@@ -8,7 +8,7 @@ class ShortenUrl < ApplicationRecord
 		if PublicSuffix.valid?(url) # check integrity using public suffix gem
 			self.simplified_url = "http://" + PublicSuffix.domain(url)
 		else
-			errors.add(:original_url, 'E:Invalid URL')
+			errors.add(:original_url, {:error => 'Invalid URL'})
 		end
 	end
 
@@ -16,7 +16,7 @@ class ShortenUrl < ApplicationRecord
 		db_url = ShortenUrl.find_by_simplified_url(self.simplified_url)
 		if !db_url.nil?
 			self.short_url = db_url.short_url
-			errors.add(:short_url, 'W:This URL is already exists')
+			errors.add(:short_url, {:warning => 'This URL is already exists'})
 		end
 	end
 
